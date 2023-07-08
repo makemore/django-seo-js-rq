@@ -9,6 +9,11 @@ logger = logging.getLogger(__name__)
 import django_rq
 
 
+def process_url(url):
+    uam = UserAgentMiddleware()
+    uam.get_response_for_url_return_nothing(url)
+
+
 class UserAgentMiddleware(SelectedBackend):
     def __init__(self, *args, **kwargs):
         super(UserAgentMiddleware, self).__init__(*args, **kwargs)
@@ -38,7 +43,7 @@ class UserAgentMiddleware(SelectedBackend):
         if background == "true":
             print("inside")
             queue = django_rq.get_queue('low')
-            queue.enqueue(self.backend.get_response_for_url_return_nothing, url, job_timeout=3600)
+            queue.enqueue(process_url, url, job_timeout=3600)
             return
 
         try:

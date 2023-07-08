@@ -38,7 +38,7 @@ class UserAgentMiddleware(SelectedBackend):
         if background == "true":
             print("inside")
             queue = django_rq.get_queue('low')
-            queue.enqueue(self.backend.get_response_for_url, url, request, job_timeout=3600)
+            queue.enqueue(self.backend.get_response_for_url_return_nothing, url, job_timeout=3600)
             return
 
         try:

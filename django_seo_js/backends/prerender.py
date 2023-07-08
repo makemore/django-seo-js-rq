@@ -37,6 +37,28 @@ class PrerenderIO(SEOBackendBase, RequestsBasedBackend):
 
         return self.build_django_response_from_requests_response(r)
 
+
+    def get_response_for_url_return_nothing(self, url):
+        """
+        Accepts a fully-qualified url.
+        Returns nothing as processed through queue
+        """
+
+        if not url or "//" not in url:
+            raise ValueError("Missing or invalid url: %s" % url)
+
+        render_url = self.BASE_URL + url
+        headers = {
+            'X-Prerender-Token': self.token,
+        }
+        # if request and settings.SEND_USER_AGENT:
+        #     headers.update({'User-Agent': request.META.get('HTTP_USER_AGENT')})
+
+        r = self.session.get(render_url, headers=headers, allow_redirects=False)
+        assert r.status_code < 500
+        return
+        #return self.build_django_response_from_requests_response(r)
+
     def update_url(self, url=None, regex=None):
         """
         Accepts a fully-qualified url, or regex.

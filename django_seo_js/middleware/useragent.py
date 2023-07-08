@@ -11,7 +11,7 @@ import django_rq
 
 def process_url(url):
     uam = UserAgentMiddleware()
-    uam.get_response_for_url_return_nothing(url)
+    uam.backend.get_response_for_url_return_nothing(url)
 
 
 class UserAgentMiddleware(SelectedBackend):

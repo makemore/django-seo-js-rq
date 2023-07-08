@@ -4,7 +4,9 @@ from django_seo_js.backends import SelectedBackend
 from django_seo_js.helpers import request_should_be_ignored
 
 import logging
+
 logger = logging.getLogger(__name__)
+import django_rq
 
 
 class UserAgentMiddleware(SelectedBackend):
@@ -15,6 +17,10 @@ class UserAgentMiddleware(SelectedBackend):
         self.USER_AGENT_REGEX = re.compile(regex_str, re.IGNORECASE)
 
     def process_request(self, request):
+        print("hello catcher")
+        background = request.GET.get("background", None)
+        print(background)
+
         if not settings.ENABLED:
             return
 
@@ -28,6 +34,12 @@ class UserAgentMiddleware(SelectedBackend):
             return
 
         url = self.backend.build_absolute_uri(request)
+
+        if background == "true":
+            queue = django_rq.get_queue('low')
+            queue.enqueue(self.backend.get_response_for_url, url, request, job_timeout=3600)
+            return
+
         try:
             return self.backend.get_response_for_url(url, request)
         except Exception as e:

@@ -45,7 +45,7 @@ class UserAgentMiddleware(SelectedBackend):
             url = url.replace("?background=true", "")
             queue = django_rq.get_queue('low')
             queue.enqueue(process_url, url, job_timeout=3600)
-            return HttpResponse()
+            return HttpResponse(status=204)
 
         try:
             return self.backend.get_response_for_url(url, request)

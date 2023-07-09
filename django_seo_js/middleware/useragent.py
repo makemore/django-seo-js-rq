@@ -42,6 +42,7 @@ class UserAgentMiddleware(SelectedBackend):
         print("trip")
         if background == "true":
             print("inside")
+            url = url.replace("?background=true", "")
             queue = django_rq.get_queue('low')
             queue.enqueue(process_url, url, job_timeout=3600)
             return

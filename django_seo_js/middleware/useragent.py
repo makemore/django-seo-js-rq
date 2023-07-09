@@ -2,6 +2,9 @@ import re
 from django_seo_js import settings
 from django_seo_js.backends import SelectedBackend
 from django_seo_js.helpers import request_should_be_ignored
+from django.http import HttpResponse
+
+#,# HttpResponseNotFound, Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
 
 import logging
 
@@ -45,7 +48,7 @@ class UserAgentMiddleware(SelectedBackend):
             url = url.replace("?background=true", "")
             queue = django_rq.get_queue('low')
             queue.enqueue(process_url, url, job_timeout=3600)
-            return HttpResponse(status=204)
+            HttpResponse(request, status=200)
 
         try:
             return self.backend.get_response_for_url(url, request)

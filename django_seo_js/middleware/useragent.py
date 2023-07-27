@@ -25,9 +25,7 @@ class UserAgentMiddleware(SelectedBackend):
         self.USER_AGENT_REGEX = re.compile(regex_str, re.IGNORECASE)
 
     def process_request(self, request):
-        print("hello catcher")
         background = request.GET.get("background", None)
-        print(background)
 
         if not settings.ENABLED:
             return
@@ -42,13 +40,11 @@ class UserAgentMiddleware(SelectedBackend):
             return
 
         url = self.backend.build_absolute_uri(request)
-        print("trip")
+
         if background == "true":
-            print("inside")
             url = url.replace("?background=true", "")
             queue = django_rq.get_queue('low')
             queue.enqueue(process_url, url, job_timeout=3600)
-            #return HttpResponse(request, status=200)
             return
         try:
             return self.backend.get_response_for_url(url, request)
